@@ -1,0 +1,11 @@
+# Step 1: Use an Nginx server to host static files
+FROM nginx:alpine
+
+# Step 2: Copy your files into the default Nginx folder
+COPY . /usr/share/nginx/html
+
+# Step 3: Tell Docker to use port 80
+EXPOSE 80
+
+# Step 4: Start the server
+CMD ["nginx", "-g", "daemon off;"]
