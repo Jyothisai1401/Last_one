@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VOYAGR — Discover the World</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ===== LOADING SCREEN ===== -->
+<div id="loader">
+  <div class="loader-inner">
+    <span class="loader-logo">VOYAGR</span>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+  </div>
+</div>
+
+<!-- ===== AUTH MODAL ===== -->
+<div id="authModal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeAuth()">&#x2715;</button>
+    <div class="modal-tabs">
+      <button class="tab-btn active" onclick="switchTab('login')" id="loginTab">Sign In</button>
+      <button class="tab-btn" onclick="switchTab('register')" id="registerTab">Create Account</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm" class="auth-form">
+      <h2 class="form-title">Welcome back,<br/><em>traveller</em></h2>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"/>
+        <span class="field-error" id="loginEmailErr"></span>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/>
+        <span class="field-error" id="loginPasswordErr"></span>
+      </div>
+      <div class="form-options">
+        <label class="checkbox-wrap"><input type="checkbox" id="rememberMe"/> <span>Remember me</span></label>
+        <a href="#" class="forgot-link" onclick="showToast('Password reset link sent!')">Forgot password?</a>
+      </div>
+      <button class="btn-primary full-width" onclick="handleLogin()" id="loginBtn">
+        <span>Sign In</span><div class="btn-spinner hidden"></div>
+      </button>
+      <div class="auth-divider"><span>or continue with</span></div>
+      <div class="social-btns">
+        <button class="social-btn" onclick="socialAuth('Google')"><img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20"/> Google</button>
+        <button class="social-btn" onclick="socialAuth('Facebook')"><img src="https://www.svgrepo.com/show/448224/facebook.svg" width="20"/> Facebook</button>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" class="auth-form hidden">
+      <h2 class="form-title">Start your<br/><em>journey</em></h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="regFirst" placeholder="Alex" autocomplete="given-name"/>
+          <span class="field-error" id="regFirstErr"></span>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="regLast" placeholder="Doe" autocomplete="family-name"/>
+          <span class="field-error" id="regLastErr"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email"/>
+        <span class="field-error" id="regEmailErr"></span>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Min. 8 characters" autocomplete="new-password"/>
+        <div class="password-strength" id="strengthBar"></div>
+        <span class="field-error" id="regPasswordErr"></span>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="regConfirm" placeholder="••••••••" autocomplete="new-password"/>
+        <span class="field-error" id="regConfirmErr"></span>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-wrap">
+          <input type="checkbox" id="termsCheck"/>
+          <span>I agree to the <a href="#">Terms of Service</a> &amp; <a href="#">Privacy Policy</a></span>
+        </label>
+        <span class="field-error" id="termsErr"></span>
+      </div>
+      <button class="btn-primary full-width" onclick="handleRegister()" id="registerBtn">
+        <span>Create Account</span><div class="btn-spinner hidden"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">VOYAGR</a>
+    <ul class="nav-links">
+      <li><a href="#destinations" class="nav-link">Destinations</a></li>
+      <li><a href="#experiences" class="nav-link">Experiences</a></li>
+      <li><a href="#deals" class="nav-link">Deals</a></li>
+      <li><a href="#about" class="nav-link">About</a></li>
+    </ul>
+    <div class="nav-actions">
+      <div id="userGreeting" class="user-greeting hidden">
+        <span id="greetName"></span>
+        <button class="btn-ghost" onclick="handleLogout()">Logout</button>
+      </div>
+      <button class="btn-ghost" onclick="openAuth('login')" id="signinBtn">Sign In</button>
+      <button class="btn-primary" onclick="openAuth('register')" id="joinBtn">Join Free</button>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu hidden" id="mobileMenu">
+    <a href="#destinations" onclick="toggleMenu()">Destinations</a>
+    <a href="#experiences" onclick="toggleMenu()">Experiences</a>
+    <a href="#deals" onclick="toggleMenu()">Deals</a>
+    <a href="#about" onclick="toggleMenu()">About</a>
+    <button class="btn-primary" onclick="openAuth('register');toggleMenu()">Join Free</button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-bg">
+    <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600')"></div>
+    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600')"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Curated Travel Experiences</p>
+    <h1 class="hero-title">The world is<br/><em>waiting for you</em></h1>
+    <p class="hero-subtitle">Discover handpicked destinations, tailor-made itineraries, and exclusive experiences crafted for discerning travellers.</p>
+    <div class="hero-cta">
+      <button class="btn-primary large" onclick="scrollTo('#search-bar')">Explore Now</button>
+      <button class="btn-ghost-white large" onclick="openAuth('register')">Plan My Trip</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num" data-target="190">0</span><span class="stat-label">Countries</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num" data-target="12400">0</span><span class="stat-label">Experiences</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num" data-target="98">0</span><span class="stat-label">% Happy Travelers</span></div>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <span>Scroll</span><div class="scroll-line"></div>
+  </div>
+  <div class="hero-dots" id="heroDots">
+    <button class="dot active" onclick="goSlide(0)"></button>
+    <button class="dot" onclick="goSlide(1)"></button>
+    <button class="dot" onclick="goSlide(2)"></button>
+  </div>
+</section>
+
+<!-- ===== SEARCH BAR ===== -->
+<section id="search-bar">
+  <div class="search-card">
+    <div class="search-tabs">
+      <button class="s-tab active" onclick="setSearchTab(this,'flights')">✈ Flights</button>
+      <button class="s-tab" onclick="setSearchTab(this,'hotels')">🏨 Hotels</button>
+      <button class="s-tab" onclick="setSearchTab(this,'packages')">🎒 Packages</button>
+      <button class="s-tab" onclick="setSearchTab(this,'experiences')">🌟 Experiences</button>
+    </div>
+    <div class="search-inputs">
+      <div class="s-input-wrap">
+        <label>From</label>
+        <input type="text" id="searchFrom" placeholder="City or Airport" list="cityList"/>
+      </div>
+      <button class="swap-btn" onclick="swapLocations()">⇄</button>
+      <div class="s-input-wrap">
+        <label>To</label>
+        <input type="text" id="searchTo" placeholder="City or Airport" list="cityList"/>
+      </div>
+      <div class="s-input-wrap">
+        <label>Depart</label>
+        <input type="date" id="searchDepart"/>
+      </div>
+      <div class="s-input-wrap">
+        <label>Return</label>
+        <input type="date" id="searchReturn"/>
+      </div>
+      <div class="s-input-wrap">
+        <label>Guests</label>
+        <select id="searchGuests">
+          <option>1 Guest</option><option>2 Guests</option>
+          <option>3 Guests</option><option>4+ Guests</option>
+        </select>
+      </div>
+      <button class="btn-primary search-btn" onclick="handleSearch()">Search</button>
+    </div>
+    <datalist id="cityList">
+      <option value="Paris, France"/><option value="Tokyo, Japan"/>
+      <option value="New York, USA"/><option value="Bali, Indonesia"/>
+      <option value="Dubai, UAE"/><option value="Sydney, Australia"/>
+      <option value="London, UK"/><option value="Rome, Italy"/>
+      <option value="Barcelona, Spain"/><option value="Maldives"/>
+    </datalist>
+  </div>
+</section>
+
+<!-- ===== DESTINATIONS ===== -->
+<section id="destinations" class="section">
+  <div class="section-header">
+    <p class="section-eyebrow">Explore</p>
+    <h2 class="section-title">Trending Destinations</h2>
+    <p class="section-sub">Handpicked locations loved by our community of explorers</p>
+  </div>
+  <div class="filter-row" id="destFilters">
+    <button class="filter-btn active" onclick="filterDest(this,'all')">All</button>
+    <button class="filter-btn" onclick="filterDest(this,'beach')">Beach</button>
+    <button class="filter-btn" onclick="filterDest(this,'mountain')">Mountain</button>
+    <button class="filter-btn" onclick="filterDest(this,'city')">City</button>
+    <button class="filter-btn" onclick="filterDest(this,'cultural')">Cultural</button>
+    <button class="filter-btn" onclick="filterDest(this,'adventure')">Adventure</button>
+  </div>
+  <div class="dest-grid" id="destGrid"></div>
+  <div class="section-cta">
+    <button class="btn-ghost" onclick="loadMoreDest()">View All Destinations <span>→</span></button>
+  </div>
+</section>
+
+<!-- ===== EXPERIENCES ===== -->
+<section id="experiences" class="section bg-sand">
+  <div class="section-header">
+    <p class="section-eyebrow">Curated For You</p>
+    <h2 class="section-title">Unique Experiences</h2>
+    <p class="section-sub">Go beyond sightseeing — immerse yourself in local culture</p>
+  </div>
+  <div class="exp-grid" id="expGrid"></div>
+</section>
+
+<!-- ===== DEALS ===== -->
+<section id="deals" class="section">
+  <div class="section-header">
+    <p class="section-eyebrow">Limited Time</p>
+    <h2 class="section-title">Exclusive Deals</h2>
+    <p class="section-sub">Save big on our editor-selected packages — before they're gone</p>
+  </div>
+  <div class="deals-grid" id="dealsGrid"></div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="section bg-dark">
+  <div class="section-header light">
+    <p class="section-eyebrow">Stories</p>
+    <h2 class="section-title">From Our Travellers</h2>
+  </div>
+  <div class="testimonial-track" id="testimonialTrack"></div>
+  <div class="testimonial-nav">
+    <button onclick="prevTestimonial()">←</button>
+    <button onclick="nextTestimonial()">→</button>
+  </div>
+</section>
+
+<!-- ===== NEWSLETTER ===== -->
+<section class="newsletter-section" id="about">
+  <div class="newsletter-inner">
+    <div class="newsletter-text">
+      <h2>Get inspired.<br/><em>Travel further.</em></h2>
+      <p>Subscribe for curated destination guides, exclusive deals, and insider travel tips delivered weekly.</p>
+    </div>
+    <div class="newsletter-form">
+      <input type="email" id="nlEmail" placeholder="Enter your email address"/>
+      <button class="btn-primary" onclick="handleNewsletter()">Subscribe</button>
+    </div>
+    <p class="newsletter-note">✓ No spam. Unsubscribe anytime. 47,000+ readers.</p>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo">VOYAGR</span>
+      <p>Crafting extraordinary travel experiences for the modern explorer since 2018.</p>
+      <div class="social-links">
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="Twitter">TW</a>
+        <a href="#" aria-label="Facebook">FB</a>
+        <a href="#" aria-label="Pinterest">PT</a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <a href="#">Destinations</a><a href="#">Experiences</a>
+        <a href="#">Travel Guides</a><a href="#">Trip Planner</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About Us</a><a href="#">Careers</a>
+        <a href="#">Press</a><a href="#">Partners</a>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <a href="#">Help Center</a><a href="#">Booking Policy</a>
+        <a href="#">Privacy Policy</a><a href="#">Contact Us</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 VOYAGR. All rights reserved.</span>
+    <span>Made with ♥ for explorers everywhere</span>
+  </div>
+</footer>
+
+<!-- ===== WISHLIST FAB ===== -->
+<div class="fab" id="wishlistFab" onclick="toggleWishlist()" title="My Wishlist">
+  <span>♡</span>
+  <span class="fab-badge" id="fabBadge">0</span>
+</div>
+
+<!-- ===== WISHLIST PANEL ===== -->
+<div class="wishlist-panel hidden" id="wishlistPanel">
+  <div class="wp-header">
+    <h3>My Wishlist</h3>
+    <button onclick="toggleWishlist()">✕</button>
+  </div>
+  <div class="wp-body" id="wpBody">
+    <p class="wp-empty">Your wishlist is empty.<br/>Start exploring and save your dream destinations!</p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
